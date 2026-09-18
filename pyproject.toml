@@ -1,0 +1,16 @@
+[project]
+name = "coc-demo"
+version = "0.1.0"
+description = "Placeholder web app for FedRAMP Compliance-as-Code learning"
+requires-python = ">=3.12"
+dependencies = [
+    "flask==3.0.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==8.3.3",
+    "compliance-trestle==3.7.0",
+    "pyyaml==6.0.3",
+    "jsonschema==4.26.0",
+]

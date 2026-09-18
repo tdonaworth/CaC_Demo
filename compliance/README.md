@@ -37,8 +37,13 @@ Not yet started: `component-definitions/`, `system-security-plans/`,
 
 ## Commands used to set this up
 
+`trestle` comes from the `dev` dependency group in `pyproject.toml`. `uv run`
+auto-discovers the project root, so it works the same whether you run it
+from the repo root or from `compliance/` (the commands below assume the
+latter, since that's the Trestle workspace root).
+
 ```sh
-trestle init
+uv run trestle init
 
 # Catalog + baseline profile, from NIST's own OSCAL content repo
 curl -sL -o /tmp/catalog.json \
@@ -46,20 +51,20 @@ curl -sL -o /tmp/catalog.json \
 curl -sL -o /tmp/profile.json \
   https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_MODERATE-baseline_profile.json
 
-trestle import -f /tmp/catalog.json -o nist800-53r5
-trestle import -f /tmp/profile.json -o fedramp-moderate
+uv run trestle import -f /tmp/catalog.json -o nist800-53r5
+uv run trestle import -f /tmp/profile.json -o fedramp-moderate
 
 # The imported profile references its catalog by a relative path meant for
 # the oscal-content repo's own layout; repoint it at the local catalog:
-trestle href -n fedramp-moderate -hr trestle://catalogs/nist800-53r5/catalog.json
+uv run trestle href -n fedramp-moderate -hr trestle://catalogs/nist800-53r5/catalog.json
 
-trestle validate -a
+uv run trestle validate -a
 ```
 
 ## Regenerating the resolved catalog
 
 ```sh
-trestle author profile-resolve -n fedramp-moderate -o fedramp-moderate-resolved
+uv run trestle author profile-resolve -n fedramp-moderate -o fedramp-moderate-resolved
 ```
 
 ## Next steps

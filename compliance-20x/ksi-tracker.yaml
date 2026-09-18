@@ -305,8 +305,8 @@ KSI-SCR-MIT:
   status: in_progress
   policy: null
   evidence:
-  - .github/dependabot.yml opens automated update PRs for pip and github-actions dependencies
-  - requirements.txt / requirements-dev.txt pin exact versions
+  - .github/dependabot.yml opens automated update PRs for uv and github-actions dependencies
+  - pyproject.toml pins exact versions; uv.lock pins the full resolved dependency tree
   notes: "Covers dependency mitigation. Doesn't yet cover broader supply-chain risks (e.g. build provenance,\
     \ SBOM) \u2014 revisit as the app grows real infra."
 KSI-SCR-MON:
@@ -315,7 +315,7 @@ KSI-SCR-MON:
   status: in_progress
   policy: null
   evidence:
-  - .github/dependabot.yml enables Dependabot security alerts for pip and github-actions ecosystems
+  - .github/dependabot.yml enables Dependabot security alerts for uv and github-actions ecosystems
   notes: "Config exists in code but hasn't been proven live yet \u2014 this repo has no remote, so Dependabot\
     \ has never actually run. Confirm alerts fire once pushed to GitHub."
 KSI-SVC-ACM:

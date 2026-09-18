@@ -45,10 +45,10 @@ indicators vs. the 177 controls in the Moderate baseline imported under
   before relying on it — see the upstream repo's `AGENTS.md`)
 - `tools/ksi.py` — browse the dataset and check tracker coverage:
   ```sh
-  python compliance-20x/tools/ksi.py themes
-  python compliance-20x/tools/ksi.py list IAM
-  python compliance-20x/tools/ksi.py show KSI-IAM-APM
-  python compliance-20x/tools/ksi.py tracker-status
+  uv run python compliance-20x/tools/ksi.py themes
+  uv run python compliance-20x/tools/ksi.py list IAM
+  uv run python compliance-20x/tools/ksi.py show KSI-IAM-APM
+  uv run python compliance-20x/tools/ksi.py tracker-status
   ```
 - `ksi-tracker.yaml` — one entry per KSI indicator (status, linked policy,
   evidence notes). This is the 20x-equivalent of an SSP: a living record of
@@ -73,8 +73,8 @@ curl -sL -o compliance-20x/data/fedramp-consolidated-rules.json \
   https://raw.githubusercontent.com/FedRAMP/rules/main/fedramp-consolidated-rules.json
 curl -sL -o compliance-20x/data/fedramp-consolidated-rules.schema.json \
   https://raw.githubusercontent.com/FedRAMP/rules/main/schemas/fedramp-consolidated-rules.schema.json
-python compliance-20x/tools/validate_dataset.py
-python compliance-20x/tools/ksi.py tracker-status   # check for new/removed indicator IDs
+uv run python compliance-20x/tools/validate_dataset.py
+uv run python compliance-20x/tools/ksi.py tracker-status   # check for new/removed indicator IDs
 ```
 
 ## Theme-by-theme status
@@ -97,7 +97,7 @@ What moved to `in_progress` this pass, with real (not simulated) artifacts:
 - Request-level audit logging (`app/app.py`, see `docs/logging.md`) — KSI-MLA-LET
 - CI running the full check suite on every change (`.github/workflows/ci.yml`) — KSI-CMT-VTD
 - Git/PR history + CI run history as the change log — KSI-CMT-LMC
-- Dependabot for pip + GitHub Actions (`.github/dependabot.yml`) — KSI-SCR-MIT, KSI-SCR-MON
+- Dependabot for uv + GitHub Actions (`.github/dependabot.yml`) — KSI-SCR-MIT, KSI-SCR-MON
 - Dependabot + CI + this tracker as an ongoing improvement loop — KSI-SVC-EIS
 
 None of these are marked `implemented` — the repo has no git remote yet, so

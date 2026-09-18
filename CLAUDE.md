@@ -81,28 +81,29 @@ SECURITY.md             Draft vulnerability disclosure policy (KSI-PIY-RVD prere
 .github/
   workflows/ci.yml      Runs pytest, opa test, dataset validation on every push/PR
   dependabot.yml        Automated dependency updates (KSI-SCR-MIT/MON)
-requirements.txt        Runtime deps (Flask)
-requirements-dev.txt    Dev/test deps: pytest, compliance-trestle, pyyaml, jsonschema
+pyproject.toml          Project + runtime deps (Flask) + dev dep group (pytest, compliance-trestle, pyyaml, jsonschema)
+uv.lock                 Locked, resolved dependency tree (committed — like package-lock.json)
+.python-version         Pins 3.12 for uv to select/install automatically
 ```
 
 ## Stack
 
-- **App:** Python + Flask
+- **App:** Python + Flask, managed with **uv** (not pip/venv directly)
 - **Enforcement:** OPA + Rego (v1 syntax — this repo's OPA is 1.20+, which
   requires `if`/`contains` keywords)
 - **Audit/reporting:** OSCAL via compliance-trestle (Rev5) +
   FedRAMP's own consolidated-rules JSON (20x)
 
 > `compliance-trestle` requires **Python 3.10+** (a dependency uses
-> `typing.TypeGuard`). This project's venv uses Homebrew's `python@3.12`,
-> not the macOS system Python 3.9. Create it with:
-> `/opt/homebrew/bin/python3.12 -m venv .venv`
+> `typing.TypeGuard`). `uv sync` handles this automatically — it reads
+> `.python-version` (3.12) and downloads that interpreter itself if needed,
+> so there's no more manual Homebrew-Python workaround.
 
 ## Running the app
 
 ```sh
-pip install -r requirements.txt
-python app/app.py
+uv sync
+uv run python app/app.py
 # http://localhost:5000
 ```
 
@@ -113,8 +114,7 @@ python app/app.py
 ## Running tests
 
 ```sh
-pip install -r requirements-dev.txt
-pytest
+uv run pytest
 ```
 
 ## Running policy tests
@@ -128,9 +128,9 @@ opa test policy/ -v
 ## Browsing the FedRAMP 20x KSI dataset
 
 ```sh
-python compliance-20x/tools/ksi.py themes
-python compliance-20x/tools/ksi.py show KSI-IAM-APM
-python compliance-20x/tools/ksi.py tracker-status
+uv run python compliance-20x/tools/ksi.py themes
+uv run python compliance-20x/tools/ksi.py show KSI-IAM-APM
+uv run python compliance-20x/tools/ksi.py tracker-status
 ```
 
 ## Status / next steps
