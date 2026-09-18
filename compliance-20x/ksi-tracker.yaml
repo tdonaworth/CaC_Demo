@@ -16,98 +16,115 @@ KSI-CED-RAT:
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs a real training program (general + role-specific + secure-SDLC + IR training) and a review
+    cadence. Nothing to evidence in a demo repo with no employees.
 KSI-CMT-LMC:
   theme: Change Management
   name: Logging Changes
-  status: not_started
+  status: in_progress
   policy: null
-  evidence: []
-  notes: ''
+  evidence:
+  - Git commit/PR history is the log of source changes
+  - .github/workflows/ci.yml run history logs every check on every change
+  notes: No cloud/infrastructure audit log yet since nothing is deployed to real infra. Revisit once there's
+    an actual deployment target.
 KSI-CMT-RMV:
   theme: Change Management
   name: Redeploying vs Modifying
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs an actual deployment mechanism (e.g. containerized, deployed only via CI, no direct server
+    modification) before this can be evidenced. See docs/change-management.md known gaps.
 KSI-CMT-RVP:
   theme: Change Management
   name: Reviewing Change Procedures
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: docs/change-management.md is a draft procedure, but no review cadence exists yet and none has
+    run. Don't mark in_progress/implemented until a real recurring review happens.
 KSI-CMT-VTD:
   theme: Change Management
   name: Validating Throughout Deployment
-  status: not_started
+  status: in_progress
   policy: null
-  evidence: []
-  notes: ''
+  evidence:
+  - .github/workflows/ci.yml runs pytest, opa test, and the 20x dataset validator on every push/PR
+  notes: Workflow exists in code but hasn't run in a live GitHub Actions environment yet (repo has no
+    remote). Confirm it actually runs green once pushed before calling this implemented.
 KSI-CNA-DFP:
   theme: Cloud Native Architecture
   name: Defining Functionality and Privileges
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: 'Infrastructure-level: needs actual infra defined (IaC) with least- functionality baked in. Nothing
+    to check until this app is deployed somewhere real.'
 KSI-CNA-EIS:
   theme: Cloud Native Architecture
   name: Enforcing Intended State
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Required at Class C, optional at Class B. Needs automated config-drift detection/enforcement
+    (e.g. cloud config rules, admission controllers) against real infra, which doesn't exist yet.
 KSI-CNA-IBP:
   theme: Cloud Native Architecture
   name: Implementing Best Practices
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs a benchmark scan (e.g. CIS benchmarks via a tool like Prowler or Scout Suite) against real
+    cloud infra once it's provisioned.
 KSI-CNA-MAT:
   theme: Cloud Native Architecture
   name: Minimizing Attack Surface
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs actual network/infra topology (exposed ports, lateral-movement paths) to review. N/A to
+    a placeholder app with no deployment target.
 KSI-CNA-OFA:
   theme: Cloud Native Architecture
   name: Optimizing for Availability
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "No NIST controls mapped for this one in the dataset. Needs a real HA/DR architecture (multi-AZ,\
+    \ autoscaling, health checks) \u2014 not applicable to a single placeholder Flask process."
 KSI-CNA-RNT:
   theme: Cloud Native Architecture
   name: Restricting Network Traffic
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "Needs firewall/security-group rules once deployed. Natural fit for a future Rego policy over\
+    \ IaC (e.g. Terraform plan JSON) rather than app config \u2014 a different enforcement point than\
+    \ policy/fedramp_20x/app_config.rego."
 KSI-CNA-RVP:
   theme: Cloud Native Architecture
   name: Reviewing Protections
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs actual DDoS/WAF protection (e.g. Cloudflare, AWS Shield) in place plus a review cadence
+    of its effectiveness. Nothing deployed to protect yet.
 KSI-CNA-ULN:
   theme: Cloud Native Architecture
   name: Using Logical Networking
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs VPC/subnet/network segmentation design once this app has a real deployment target.
 KSI-IAM-AAM:
   theme: Identity and Access Management
   name: Automating Account Management
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs real account-lifecycle automation (provisioning/deprovisioning, privilege changes) for
+    cloud/service accounts. App has no account system at all yet.
 KSI-IAM-APM:
   theme: Identity and Access Management
   name: Adopting Passwordless Methods
@@ -130,70 +147,81 @@ KSI-IAM-JIT:
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "Needs a real authorization model (roles, JIT elevation) to review. App has no auth system yet\
+    \ \u2014 nothing to evidence."
 KSI-IAM-SNU:
   theme: Identity and Access Management
   name: Securing Non-User Authentication
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs an inventory of non-user/service accounts and their auth methods. App has no external integrations
+    or service accounts yet.
 KSI-IAM-SUS:
   theme: Identity and Access Management
   name: Responding to Suspicious Activity
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs a working account system plus an automated response to suspicious activity (e.g. auto-disable).
+    Can't exist before accounts do.
 KSI-INR-AAR:
   theme: Incident Response
   name: Generating After Action Reports
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs an actual incident response program generating after-action reports. None exists yet for
+    a placeholder app with no real users.
 KSI-INR-RIR:
   theme: Incident Response
   name: Reviewing Incident Response Procedures
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs a documented IR procedure plus a real review cadence of its effectiveness, same pattern
+    as KSI-CMT-RVP. Neither exists yet.
 KSI-INR-RPI:
   theme: Incident Response
   name: Reviewing Past Incidents
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "Needs actual past incidents to review for patterns. N/A \u2014 no incidents, no production system."
 KSI-MLA-ALA:
   theme: Monitoring, Logging, and Auditing
   name: Authorizing Log Access
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Required at Class C, optional at Class B. Needs a real log storage system with RBAC on who can
+    read it. Logs currently just go to stdout (see docs/logging.md).
 KSI-MLA-EVC:
   theme: Monitoring, Logging, and Auditing
   name: Evaluating Configurations
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "Needs IaC to evaluate \u2014 this repo has none yet. Revisit once infrastructure is defined\
+    \ as code."
 KSI-MLA-LET:
   theme: Monitoring, Logging, and Auditing
   name: Logging Event Types
-  status: not_started
+  status: in_progress
   policy: null
-  evidence: []
-  notes: ''
+  evidence:
+  - app/app.py after_request hook logs method/path/status/remote_addr for every request
+  - docs/logging.md maintains the list of what is and isn't logged yet
+  notes: Only HTTP request logging exists so far; docs/logging.md tracks the gaps (auth events, infra
+    changes, OPA decisions).
 KSI-MLA-OSM:
   theme: Monitoring, Logging, and Auditing
   name: Operating SIEM Capability
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs a real SIEM or centralized tamper-resistant log store. Logs currently just go to stdout,
+    nowhere centralized.
 KSI-MLA-RVL:
   theme: Monitoring, Logging, and Auditing
   name: Reviewing Logs
@@ -208,112 +236,130 @@ KSI-PIY-GIV:
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs an authoritative source to generate real-time resource inventories from (e.g. cloud provider
+    APIs). No real infra to inventory yet.
 KSI-PIY-RES:
   theme: Policy and Inventory
   name: Reviewing Executive Support
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Organizational/leadership indicator with no NIST controls mapped in the dataset. Not something
+    a demo repo can evidence.
 KSI-PIY-RIS:
   theme: Policy and Inventory
   name: Reviewing Investments in Security
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "Organizational \u2014 reviewing security investment effectiveness. No real security budget/program\
+    \ exists for a placeholder app."
 KSI-PIY-RSD:
   theme: Policy and Inventory
   name: Reviewing Security in the SDLC
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: CI (pytest, opa test) and this KSI tracking exercise are early building blocks, but there's no
+    formal secure-SDLC review process (threat modeling, security review gates) yet.
 KSI-PIY-RVD:
   theme: Policy and Inventory
   name: Reviewing Vulnerability Disclosures
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "SECURITY.md is the starting vulnerability-disclosure artifact, but its effectiveness hasn't\
+    \ been reviewed \u2014 nothing to review yet since nothing has been disclosed through it."
 KSI-RPL-ABO:
   theme: Recovery Planning
   name: Aligning Backups with Objectives
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs real backups and defined recovery objectives to align. No deployment, no data store, no
+    backups exist yet.
 KSI-RPL-ARP:
   theme: Recovery Planning
   name: Aligning Recovery Plan
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs an actual recovery plan to review. Nothing deployed to have a recovery plan for yet.
 KSI-RPL-RRO:
   theme: Recovery Planning
   name: Reviewing Recovery Objectives
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "RTO/RPO targets haven't been defined \u2014 there's no production system they'd apply to yet."
 KSI-RPL-TRC:
   theme: Recovery Planning
   name: Testing Recovery Capabilities
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Needs a recovery capability to test (failover, restore-from-backup drills). None exists yet.
 KSI-SCR-MIT:
   theme: Supply Chain Risk
   name: Mitigating Supply Chain Risk
-  status: not_started
+  status: in_progress
   policy: null
-  evidence: []
-  notes: ''
+  evidence:
+  - .github/dependabot.yml opens automated update PRs for pip and github-actions dependencies
+  - requirements.txt / requirements-dev.txt pin exact versions
+  notes: "Covers dependency mitigation. Doesn't yet cover broader supply-chain risks (e.g. build provenance,\
+    \ SBOM) \u2014 revisit as the app grows real infra."
 KSI-SCR-MON:
   theme: Supply Chain Risk
   name: Monitoring Supply Chain Risk
-  status: not_started
+  status: in_progress
   policy: null
-  evidence: []
-  notes: ''
+  evidence:
+  - .github/dependabot.yml enables Dependabot security alerts for pip and github-actions ecosystems
+  notes: "Config exists in code but hasn't been proven live yet \u2014 this repo has no remote, so Dependabot\
+    \ has never actually run. Confirm alerts fire once pushed to GitHub."
 KSI-SVC-ACM:
   theme: Service Configuration
   name: Automating Configuration Management
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "Needs IaC with drift detection \u2014 this repo has no infrastructure-as-code yet."
 KSI-SVC-ASM:
   theme: Service Configuration
   name: Automating Secret Management
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "App currently has zero secrets (no API keys, DB credentials, etc.), so there's nothing to rotate\
+    \ yet. Revisit the moment any secret is introduced \u2014 don't hardcode it."
 KSI-SVC-EIS:
   theme: Service Configuration
   name: Evaluating and Improving Security
-  status: not_started
+  status: in_progress
   policy: null
-  evidence: []
-  notes: ''
+  evidence:
+  - Dependabot (.github/dependabot.yml) surfaces upgrade opportunities automatically
+  - CI (.github/workflows/ci.yml) runs the full check suite on every change
+  - compliance-20x/ksi-tracker.yaml itself is the living record of what's being improved
+  notes: These are early-stage mechanisms; there's no formal recurring security-improvement review yet
+    beyond what these tools surface automatically.
 KSI-SVC-PRR:
   theme: Service Configuration
   name: Preventing Residual Risk
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Required at Class C, optional at Class B. Needs a real change/decommissioning process to review
+    residual state after. None exists yet.
 KSI-SVC-RUD:
   theme: Service Configuration
   name: Removing Unwanted Data
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Required at Class C, optional at Class B. App has no data store, so there's no federal customer
+    data to remove yet.
 KSI-SVC-SIN:
   theme: Service Configuration
   name: Securing Information
@@ -328,11 +374,13 @@ KSI-SVC-VCM:
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: Required at Class C, optional at Class B. Single monolith app with no inter-service calls yet,
+    so there's no communication to validate.
 KSI-SVC-VRI:
   theme: Service Configuration
   name: Validating Resource Integrity
   status: not_started
   policy: null
   evidence: []
-  notes: ''
+  notes: "Needs cryptographic integrity validation (e.g. hash-pinned dependencies, signed container images).\
+    \ Not set up yet \u2014 a concrete next step once this app is containerized."

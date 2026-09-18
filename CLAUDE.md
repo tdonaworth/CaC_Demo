@@ -64,16 +64,23 @@ update for 20x).
 
 ```
 app/                    Placeholder Flask web app
-  app.py                Entry point (routes: / and /healthz)
+  app.py                Entry point (routes: / and /healthz), request audit logging
   templates/            Jinja templates
   static/               CSS
 tests/
-  test_app.py           Basic Flask tests
+  test_app.py           Basic Flask tests, incl. audit-log test
 policy/                 OPA/Rego enforcement policies (see policy/README.md)
   fedramp_rev5/         Rev5/NIST 800-53 control-tagged rules (legacy)
   fedramp_20x/          FedRAMP 20x KSI-tagged rules (current target)
 compliance/             OSCAL/Trestle audit workspace, Rev5 (see compliance/README.md)
 compliance-20x/         FedRAMP 20x dataset + KSI tracker (see compliance-20x/README.md)
+docs/
+  change-management.md  Draft change process (KSI-CMT-RVP prerequisite)
+  logging.md            What's logged today vs. gaps (KSI-MLA-LET)
+SECURITY.md             Draft vulnerability disclosure policy (KSI-PIY-RVD prerequisite)
+.github/
+  workflows/ci.yml      Runs pytest, opa test, dataset validation on every push/PR
+  dependabot.yml        Automated dependency updates (KSI-SCR-MIT/MON)
 requirements.txt        Runtime deps (Flask)
 requirements-dev.txt    Dev/test deps: pytest, compliance-trestle, pyyaml, jsonschema
 ```
@@ -134,15 +141,19 @@ python compliance-20x/tools/ksi.py tracker-status
       (177 controls / 18 families, confirmed resolving)
 - [x] 20x track: vendored FedRAMP Consolidated Rules dataset + schema
       validator, KSI browser CLI, `ksi-tracker.yaml` seeded with all 46 KSI
-      indicators, 4 wired to Rego policies (`policy/fedramp_20x/`)
-- [ ] Work through the remaining 42 `not_started` KSI indicators
-      (`compliance-20x/README.md` has the theme-by-theme plan)
+      indicators
+- [x] All 46 KSI indicators triaged theme by theme; 10 `in_progress` with
+      real evidence (Rego policies, request audit logging, CI, Dependabot),
+      36 honestly `not_started` pending real infra/auth/org process (see
+      `compliance-20x/README.md` for the breakdown and why)
+- [x] CI (`.github/workflows/ci.yml`) runs pytest, opa test, and the 20x
+      dataset validator on every push/PR
+- [ ] Push this repo to a remote and confirm CI + Dependabot actually run;
+      only then consider upgrading any `in_progress` tracker entry
 - [ ] Look at the 20x `FRR` process rules (vuln disclosure, continuous
       monitoring, change notification) once KSI coverage is further along
 - [ ] Decide on a target Certification Class (A/B/C/D) — affects which KSI
       class variants apply
-- [ ] Wire `opa test`, `pytest`, and `compliance-20x/tools/validate_dataset.py`
-      into CI
 - [ ] Connect the Rego policies here with the target application's existing
       OPA deployment mentioned by the repo owner
 - [ ] Rev5 track (lower priority): author a Trestle component definition and
