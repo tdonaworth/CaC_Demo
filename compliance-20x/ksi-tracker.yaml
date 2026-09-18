@@ -21,13 +21,16 @@ KSI-CED-RAT:
 KSI-CMT-LMC:
   theme: Change Management
   name: Logging Changes
-  status: in_progress
+  status: implemented
   policy: null
   evidence:
   - Git commit/PR history is the log of source changes
-  - .github/workflows/ci.yml run history logs every check on every change
-  notes: No cloud/infrastructure audit log yet since nothing is deployed to real infra. Revisit once there's
-    an actual deployment target.
+  - ".github/workflows/ci.yml run history logs every check on every change — confirmed live,\
+    \ e.g. github.com/tdonaworth/CaC_Demo/actions/runs/35305208919 (2026-09-18)"
+  notes: >-
+    No cloud/infrastructure audit log yet since nothing is deployed to real
+    infra — this covers source-level changes only. Revisit once there's an
+    actual deployment target.
 KSI-CMT-RMV:
   theme: Change Management
   name: Redeploying vs Modifying
@@ -47,12 +50,12 @@ KSI-CMT-RVP:
 KSI-CMT-VTD:
   theme: Change Management
   name: Validating Throughout Deployment
-  status: in_progress
+  status: implemented
   policy: null
   evidence:
   - .github/workflows/ci.yml runs pytest, opa test, and the 20x dataset validator on every push/PR
-  notes: Workflow exists in code but hasn't run in a live GitHub Actions environment yet (repo has no
-    remote). Confirm it actually runs green once pushed before calling this implemented.
+  - "Confirmed running green on main: github.com/tdonaworth/CaC_Demo/actions/runs/35305208919 (2026-09-18)"
+  notes: ''
 KSI-CNA-DFP:
   theme: Cloud Native Architecture
   name: Defining Functionality and Privileges
@@ -307,8 +310,14 @@ KSI-SCR-MIT:
   evidence:
   - .github/dependabot.yml opens automated update PRs for uv and github-actions dependencies
   - pyproject.toml pins exact versions; uv.lock pins the full resolved dependency tree
-  notes: "Covers dependency mitigation. Doesn't yet cover broader supply-chain risks (e.g. build provenance,\
-    \ SBOM) \u2014 revisit as the app grows real infra."
+  - "2026-09-17: manually bumped flask/compliance-trestle/pytest/cryptography for known vulns,\
+    \ confirmed via full test suite (pytest, opa test, dataset validation, trestle validate)"
+  notes: >-
+    Covers dependency mitigation, but it's still manual/reactive (we bumped
+    versions by hand after seeing alerts) rather than fully automated via
+    Dependabot's own update PRs. 38 alerts (21 high) were open as of
+    2026-09-17 - see KSI-SCR-MON notes. Doesn't yet cover broader
+    supply-chain risks (e.g. build provenance, SBOM).
 KSI-SCR-MON:
   theme: Supply Chain Risk
   name: Monitoring Supply Chain Risk
@@ -316,8 +325,14 @@ KSI-SCR-MON:
   policy: null
   evidence:
   - .github/dependabot.yml enables Dependabot security alerts for uv and github-actions ecosystems
-  notes: "Config exists in code but hasn't been proven live yet \u2014 this repo has no remote, so Dependabot\
-    \ has never actually run. Confirm alerts fire once pushed to GitHub."
+  - "2026-09-17: confirmed live on first push \u2014 GitHub reported 38 Dependabot alerts (21 high,\
+    \ 9 moderate, 8 low) on the default branch"
+  notes: >-
+    Monitoring is now proven live, not just configured. 38 open alerts is a
+    real backlog to work through (github.com/tdonaworth/CaC_Demo/security/dependabot)
+    - most are likely in compliance-trestle's own dependency tree rather
+    than this project's direct pins. Still not "implemented": no one has
+    established a cadence for triaging/closing these yet.
 KSI-SVC-ACM:
   theme: Service Configuration
   name: Automating Configuration Management
