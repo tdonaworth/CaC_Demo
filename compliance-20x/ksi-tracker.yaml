@@ -1,0 +1,338 @@
+# FedRAMP 20x KSI tracker — the lightweight, per-indicator status record that
+# stands in for a heavyweight point-in-time SSP under the 20x model. One entry
+# per Key Security Indicator from compliance-20x/data/fedramp-consolidated-rules.json.
+#
+# status: not_started | in_progress | implemented
+# policy: path to the Rego file enforcing this indicator, if any
+# evidence: short notes on what demonstrates this indicator is met
+#
+# Regenerate the not_started skeleton (preserving hand-edited entries is your
+# job, this is a starting point) via the dataset in data/, or check coverage
+# with: python compliance-20x/tools/ksi.py tracker-status
+
+KSI-CED-RAT:
+  theme: Cybersecurity Education
+  name: Reviewing All Training
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CMT-LMC:
+  theme: Change Management
+  name: Logging Changes
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CMT-RMV:
+  theme: Change Management
+  name: Redeploying vs Modifying
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CMT-RVP:
+  theme: Change Management
+  name: Reviewing Change Procedures
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CMT-VTD:
+  theme: Change Management
+  name: Validating Throughout Deployment
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CNA-DFP:
+  theme: Cloud Native Architecture
+  name: Defining Functionality and Privileges
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CNA-EIS:
+  theme: Cloud Native Architecture
+  name: Enforcing Intended State
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CNA-IBP:
+  theme: Cloud Native Architecture
+  name: Implementing Best Practices
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CNA-MAT:
+  theme: Cloud Native Architecture
+  name: Minimizing Attack Surface
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CNA-OFA:
+  theme: Cloud Native Architecture
+  name: Optimizing for Availability
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CNA-RNT:
+  theme: Cloud Native Architecture
+  name: Restricting Network Traffic
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CNA-RVP:
+  theme: Cloud Native Architecture
+  name: Reviewing Protections
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-CNA-ULN:
+  theme: Cloud Native Architecture
+  name: Using Logical Networking
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-IAM-AAM:
+  theme: Identity and Access Management
+  name: Automating Account Management
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-IAM-APM:
+  theme: Identity and Access Management
+  name: Adopting Passwordless Methods
+  status: in_progress
+  policy: policy/fedramp_20x/app_config.rego
+  evidence:
+  - Rego deny rule denies MFA disabled in non-dev environments
+  notes: ''
+KSI-IAM-ELP:
+  theme: Identity and Access Management
+  name: Ensuring Least Privilege
+  status: in_progress
+  policy: policy/fedramp_20x/app_config.rego
+  evidence:
+  - Rego deny rule bounds session_timeout_minutes to <= 30
+  notes: ''
+KSI-IAM-JIT:
+  theme: Identity and Access Management
+  name: Authorizing Just-in-Time
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-IAM-SNU:
+  theme: Identity and Access Management
+  name: Securing Non-User Authentication
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-IAM-SUS:
+  theme: Identity and Access Management
+  name: Responding to Suspicious Activity
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-INR-AAR:
+  theme: Incident Response
+  name: Generating After Action Reports
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-INR-RIR:
+  theme: Incident Response
+  name: Reviewing Incident Response Procedures
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-INR-RPI:
+  theme: Incident Response
+  name: Reviewing Past Incidents
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-MLA-ALA:
+  theme: Monitoring, Logging, and Auditing
+  name: Authorizing Log Access
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-MLA-EVC:
+  theme: Monitoring, Logging, and Auditing
+  name: Evaluating Configurations
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-MLA-LET:
+  theme: Monitoring, Logging, and Auditing
+  name: Logging Event Types
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-MLA-OSM:
+  theme: Monitoring, Logging, and Auditing
+  name: Operating SIEM Capability
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-MLA-RVL:
+  theme: Monitoring, Logging, and Auditing
+  name: Reviewing Logs
+  status: in_progress
+  policy: policy/fedramp_20x/app_config.rego
+  evidence:
+  - Rego deny rule denies audit logging disabled in non-dev environments
+  notes: ''
+KSI-PIY-GIV:
+  theme: Policy and Inventory
+  name: Generating Inventories
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-PIY-RES:
+  theme: Policy and Inventory
+  name: Reviewing Executive Support
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-PIY-RIS:
+  theme: Policy and Inventory
+  name: Reviewing Investments in Security
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-PIY-RSD:
+  theme: Policy and Inventory
+  name: Reviewing Security in the SDLC
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-PIY-RVD:
+  theme: Policy and Inventory
+  name: Reviewing Vulnerability Disclosures
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-RPL-ABO:
+  theme: Recovery Planning
+  name: Aligning Backups with Objectives
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-RPL-ARP:
+  theme: Recovery Planning
+  name: Aligning Recovery Plan
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-RPL-RRO:
+  theme: Recovery Planning
+  name: Reviewing Recovery Objectives
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-RPL-TRC:
+  theme: Recovery Planning
+  name: Testing Recovery Capabilities
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SCR-MIT:
+  theme: Supply Chain Risk
+  name: Mitigating Supply Chain Risk
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SCR-MON:
+  theme: Supply Chain Risk
+  name: Monitoring Supply Chain Risk
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SVC-ACM:
+  theme: Service Configuration
+  name: Automating Configuration Management
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SVC-ASM:
+  theme: Service Configuration
+  name: Automating Secret Management
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SVC-EIS:
+  theme: Service Configuration
+  name: Evaluating and Improving Security
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SVC-PRR:
+  theme: Service Configuration
+  name: Preventing Residual Risk
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SVC-RUD:
+  theme: Service Configuration
+  name: Removing Unwanted Data
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SVC-SIN:
+  theme: Service Configuration
+  name: Securing Information
+  status: in_progress
+  policy: policy/fedramp_20x/app_config.rego
+  evidence:
+  - Rego deny rule denies missing TLS in non-dev environments
+  notes: ''
+KSI-SVC-VCM:
+  theme: Service Configuration
+  name: Validating Communications
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''
+KSI-SVC-VRI:
+  theme: Service Configuration
+  name: Validating Resource Integrity
+  status: not_started
+  policy: null
+  evidence: []
+  notes: ''

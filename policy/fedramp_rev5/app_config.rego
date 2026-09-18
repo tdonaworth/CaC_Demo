@@ -1,15 +1,15 @@
-package fedramp.app_config
+package fedramp_rev5.app_config
 
 # Example enforcement policy demonstrating how OPA/Rego ties back to FedRAMP
-# Moderate controls. Input is expected to be a simple JSON representation of
-# an application's runtime configuration.
+# Rev5 / NIST 800-53 Moderate controls. Input is expected to be a simple
+# JSON representation of an application's runtime configuration.
 
 # METADATA
 # title: Debug mode disabled outside development
 # description: Debug endpoints/stack traces must not be exposed in non-dev environments.
 # custom:
 #   control: SI-11 (Error Handling)
-deny[msg] {
+deny contains msg if {
 	input.environment != "development"
 	input.debug == true
 	msg := "debug mode must be disabled outside development environments (SI-11)"
@@ -20,7 +20,7 @@ deny[msg] {
 # description: Data in transit must be encrypted for any environment other than local dev.
 # custom:
 #   control: SC-8 (Transmission Confidentiality and Integrity)
-deny[msg] {
+deny contains msg if {
 	input.environment != "development"
 	input.tls_enabled == false
 	msg := "TLS must be enabled outside development environments (SC-8)"
@@ -31,11 +31,11 @@ deny[msg] {
 # description: Sessions must time out after a bounded period of inactivity.
 # custom:
 #   control: AC-12 (Session Termination)
-deny[msg] {
+deny contains msg if {
 	input.session_timeout_minutes > 30
 	msg := sprintf("session_timeout_minutes must be <= 30, got %v (AC-12)", [input.session_timeout_minutes])
 }
 
-allow {
+allow if {
 	count(deny) == 0
 }
