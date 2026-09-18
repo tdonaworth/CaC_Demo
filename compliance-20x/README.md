@@ -11,6 +11,27 @@ primary certification model:
 Given that timeline, this track — not `compliance/` — is the one to focus on
 if the goal is getting an app FedRAMP-certified after 2027.
 
+**Target Certification Class: C.** FedRAMP 20x defines four Certification
+Classes (A/B/C/D), and both the `KSI` and `FRR` sides of the dataset have
+rules that only apply (or apply at a stricter force) for specific classes.
+Picking C resolves that ambiguity everywhere it showed up:
+
+- `ksi-tracker.yaml`: KSI-CNA-EIS, KSI-MLA-ALA, and KSI-SVC-PRR/RUD/VCM are
+  confirmed *required* (Class C is a required, not optional, class for
+  those indicators).
+- `frr-tracker.yaml`: 13 rules exist only as per-class variants (e.g.
+  VDR-TFR-MVX, IEC-CSO-IIR/OIR/FIR, CCM-QTR-MTG) and are now tracked using
+  their Class C force/statement.
+- `FRC-CSF-BSL` (not yet in a tracker) maps Class C's Rev5 baseline to the
+  same 18 NIST 800-53 control families already imported as the Moderate
+  baseline under `compliance/` — consistent with Class C being roughly the
+  20x equivalent of a Moderate-impact Rev5 authorization.
+
+None of this makes anything `implemented` by itself — picking a class
+doesn't create the infrastructure, incident process, or agency
+relationship most `not_started` entries are still waiting on. It just
+removes "which class applies" as an open question.
+
 ## Why this looks different from `compliance/`
 
 FedRAMP 20x is not OSCAL. FedRAMP publishes its own bespoke JSON dataset (not
@@ -53,15 +74,19 @@ indicators vs. the 177 controls in the Moderate baseline imported under
 - `ksi-tracker.yaml` — one entry per KSI indicator (status, linked policy,
   evidence notes). This is the 20x-equivalent of an SSP: a living record of
   what's implemented and how it's evidenced, kept close to the code instead
-  of a static document. Currently 10/46 indicators are `in_progress`
-  (4 via `policy/fedramp_20x/app_config.rego`, plus request logging,
-  Dependabot supply-chain automation, and CI-driven security review — see
-  the tracker for specifics); the rest are honestly `not_started` because
-  they need real infrastructure, an auth system, or an organizational
-  process this placeholder app doesn't have yet. None are marked
-  `implemented` — nothing here has been proven to run in a live environment
-  (this repo has no remote yet), so don't upgrade a status past
-  `in_progress` until it has.
+  of a static document. Currently 2/46 indicators are `implemented`
+  (proven by a real green CI run and a real Dependabot PR after the repo
+  was pushed to `github.com/tdonaworth/CaC_Demo`), 8/46 are `in_progress`
+  (via `policy/fedramp_20x/app_config.rego`, request logging, and
+  Dependabot supply-chain automation — see the tracker for specifics); the
+  rest are honestly `not_started` because they need real infrastructure, an
+  auth system, or an organizational process this placeholder app doesn't
+  have yet.
+- `frr-tracker.yaml` / `tools/frr.py` — the same tracker pattern, but for
+  the `FRR` (process rule) side of the dataset instead of `KSI`. Scoped so
+  far to the five categories CLAUDE.md calls out (VDR, VER, IEC, CCM, SCN —
+  vulnerability disclosure, incident communication, continuous monitoring,
+  change notification); see "FRR (process rules)" below.
 
 ## Refreshing the vendored dataset
 
@@ -92,29 +117,70 @@ Most remain `not_started` for one of three honest reasons, not neglect:
   programs, executive review, incident after-action reports. A demo repo
   can't fabricate these; they need a real team and cadence.
 
-What moved to `in_progress` this pass, with real (not simulated) artifacts:
+With the repo now pushed to `github.com/tdonaworth/CaC_Demo`, two of those
+`in_progress` indicators became provable and moved to `implemented`:
+
+- CI running the full check suite on every change, confirmed green on
+  `main` (`.github/workflows/ci.yml`) — KSI-CMT-VTD
+- Git/PR history + CI run history as the change log, confirmed via a real
+  run URL — KSI-CMT-LMC
+
+The other `in_progress` indicators still have real (not simulated)
+artifacts, but haven't yet cleared the same "proven to run live" bar:
 
 - Request-level audit logging (`app/app.py`, see `docs/logging.md`) — KSI-MLA-LET
-- CI running the full check suite on every change (`.github/workflows/ci.yml`) — KSI-CMT-VTD
-- Git/PR history + CI run history as the change log — KSI-CMT-LMC
 - Dependabot for uv + GitHub Actions (`.github/dependabot.yml`) — KSI-SCR-MIT, KSI-SCR-MON
 - Dependabot + CI + this tracker as an ongoing improvement loop — KSI-SVC-EIS
 
-None of these are marked `implemented` — the repo has no git remote yet, so
-none of this automation has actually run anywhere. Confirm it runs green
-once pushed before upgrading a status.
+## FRR (process rules)
+
+`frr-tracker.yaml` (browse with `tools/frr.py`) triages the FRR side the
+same way `ksi-tracker.yaml` triages KSI. So far it covers the five
+categories CLAUDE.md flagged as the FRR follow-up — VDR and VER
+(vulnerability detection/response/reporting), IEC (incident communication),
+CCM (continuous monitoring), and SCN (change notification) — restricted to
+the rules where `affects: [Providers]` (the other rules in those same
+categories bind FedRAMP or Agencies, not the CSO).
+
+76 rules are tracked (63 with a class-agnostic top-level statement, plus 13
+that exist only as per-class variants — e.g. VDR-TFR-MVX, IEC-CSO-IIR/OIR/FIR,
+CCM-QTR-MTG — now tracked using their Class C force/statement since that's
+this project's target class).
+
+The finding: 73 of the 76 tracked rules are `not_started` for one structural
+reason — almost every rule in these categories presumes an active FedRAMP
+Certification and real agency customers already exist (an Ongoing
+Certification Report to publish, a Quarterly Review to host, "necessary
+parties" to notify of a change). None of that exists for a demo repo with
+no ATO, so all of CCM and most of VER/IEC/SCN are honestly `not_started`.
+The exception is 3 of VDR's detection/response rules
+(VDR-CSO-DET/RES/ADT), which don't require a Certification to be true
+today — Dependabot is real, running vulnerability detection and response
+regardless of certification status, so those move to `in_progress` on the
+same evidence as KSI-SCR-MON/KSI-SCR-MIT.
+
+The other 12 FRR categories (AFC, AGU, CDS, CMU, CPO, FRC, IVV, MAS, MKT,
+REC, SCG, SDR) aren't covered by the tracker yet.
 
 ## Next steps
 
-- [ ] Push this repo to a remote and confirm CI + Dependabot actually run;
-      only then consider upgrading any `in_progress` entry.
+- [x] Push this repo to a remote and confirm CI + Dependabot actually run —
+      done; KSI-CMT-VTD and KSI-CMT-LMC upgraded to `implemented` above.
 - [ ] Once there's a real deployment target, revisit the CNA/RPL/most-SVC
       indicators — many are natural fits for a Rego policy over IaC rather
       than app config (a different enforcement point than
       `policy/fedramp_20x/app_config.rego`).
 - [ ] Once there's a real auth system, revisit the IAM indicators.
-- [ ] Look at `FRR` (the process rules — vuln disclosure, continuous
-      monitoring, change notification) once KSI coverage is further along.
-- [ ] Revisit whether a Certification Class (A/B/C/D) target has been chosen
-      yet — that affects which KSI class variants (`varies_by_class`) apply,
-      e.g. KSI-CNA-EIS and KSI-SVC-PRR/RUD/VCM are only required at Class C.
+- [x] Decide on a target Certification Class — **C**, see "Target
+      Certification Class: C" at the top of this README. Resolved which
+      `varies_by_class` KSI indicators apply and which FRR rules' Class C
+      variant to track; did not itself unblock any `not_started` entry
+      (those still need a real Certification/agency relationship or real
+      infrastructure).
+- [ ] Pursuing an actual FedRAMP Certification is the real unblock for
+      nearly all of `frr-tracker.yaml` (an Ongoing Certification Report,
+      Quarterly Reviews, agency customers to notify) — out of scope for a
+      demo repo, but worth knowing that's the wall, not missing engineering.
+- [ ] Extend the FRR tracker to the remaining 12 categories once there's a
+      reason to (e.g. AFC/CDS/FRC become relevant once actually pursuing a
+      Certification Package).

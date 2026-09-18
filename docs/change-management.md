@@ -18,10 +18,10 @@ exist before its effectiveness can be reviewed. See
 
 ## Known gaps (TBD)
 
-- **Branch protection is not yet configured** — this repo has no remote yet,
-  so "PRs required" above is a stated intent, not an enforced GitHub
-  setting. Enforce this (required PR reviews + required status checks)
-  once the repo has a remote.
+- **Branch protection is not yet configured** on the GitHub remote
+  (`github.com/tdonaworth/CaC_Demo`) — so "PRs required" above is still a
+  stated intent, not an enforced GitHub setting. Enforce this (required PR
+  reviews + required status checks) next.
 - **No review cadence exists yet.** KSI-CMT-RVP requires this procedure's
   *effectiveness* to be persistently reviewed — that requires an actual
   recurring review (e.g. a quarterly look at change failure rate, rollback

@@ -51,9 +51,10 @@ are cross-referenceable between enforcement and audit evidence:
      documents (SSP, Component Definitions, Assessment Results) against the
      NIST Rev 5 Moderate baseline. See `compliance/README.md`.
    - `compliance-20x/` — vendored FedRAMP 20x Consolidated Rules dataset,
-     a KSI browser CLI, and `ksi-tracker.yaml` (a lightweight per-indicator
-     status record — the 20x-equivalent of an SSP, since 20x moves away
-     from static point-in-time documents). See `compliance-20x/README.md`.
+     browser CLIs (`ksi.py`, `frr.py`), and per-indicator/per-rule status
+     records (`ksi-tracker.yaml`, `frr-tracker.yaml` — the 20x-equivalent of
+     an SSP, since 20x moves away from static point-in-time documents). See
+     `compliance-20x/README.md`.
 
 When adding a mapping, add it on both sides of a track: a Rego rule
 enforcing it, and a corresponding entry in that track's audit side (a
@@ -73,7 +74,7 @@ policy/                 OPA/Rego enforcement policies (see policy/README.md)
   fedramp_rev5/         Rev5/NIST 800-53 control-tagged rules (legacy)
   fedramp_20x/          FedRAMP 20x KSI-tagged rules (current target)
 compliance/             OSCAL/Trestle audit workspace, Rev5 (see compliance/README.md)
-compliance-20x/         FedRAMP 20x dataset + KSI tracker (see compliance-20x/README.md)
+compliance-20x/         FedRAMP 20x dataset + KSI/FRR trackers (see compliance-20x/README.md)
 docs/
   change-management.md  Draft change process (KSI-CMT-RVP prerequisite)
   logging.md            What's logged today vs. gaps (KSI-MLA-LET)
@@ -133,6 +134,14 @@ uv run python compliance-20x/tools/ksi.py show KSI-IAM-APM
 uv run python compliance-20x/tools/ksi.py tracker-status
 ```
 
+## Browsing the FedRAMP 20x FRR (process rule) dataset
+
+```sh
+uv run python compliance-20x/tools/frr.py categories
+uv run python compliance-20x/tools/frr.py show VDR-CSO-DET
+uv run python compliance-20x/tools/frr.py tracker-status
+```
+
 ## Status / next steps
 
 - [x] Placeholder Flask app
@@ -142,18 +151,38 @@ uv run python compliance-20x/tools/ksi.py tracker-status
 - [x] 20x track: vendored FedRAMP Consolidated Rules dataset + schema
       validator, KSI browser CLI, `ksi-tracker.yaml` seeded with all 46 KSI
       indicators
-- [x] All 46 KSI indicators triaged theme by theme; 10 `in_progress` with
-      real evidence (Rego policies, request audit logging, CI, Dependabot),
-      36 honestly `not_started` pending real infra/auth/org process (see
+- [x] All 46 KSI indicators triaged theme by theme; 2 `implemented`
+      (KSI-CMT-VTD, KSI-CMT-LMC — proven by a real green CI run and a real
+      Dependabot PR after the push below), 8 `in_progress` with real
+      evidence (Rego policies, request audit logging, CI, Dependabot), 36
+      honestly `not_started` pending real infra/auth/org process (see
       `compliance-20x/README.md` for the breakdown and why)
 - [x] CI (`.github/workflows/ci.yml`) runs pytest, opa test, and the 20x
       dataset validator on every push/PR
-- [ ] Push this repo to a remote and confirm CI + Dependabot actually run;
-      only then consider upgrading any `in_progress` tracker entry
-- [ ] Look at the 20x `FRR` process rules (vuln disclosure, continuous
-      monitoring, change notification) once KSI coverage is further along
-- [ ] Decide on a target Certification Class (A/B/C/D) — affects which KSI
-      class variants apply
+- [x] Pushed this repo to a remote (`github.com/tdonaworth/CaC_Demo`) and
+      confirmed CI + Dependabot actually run: CI went green on `main`,
+      Dependabot opened a real update PR and surfaced 38 live vulnerability
+      alerts (21 high) — see `ksi-tracker.yaml` for the resulting status
+      moves
+- [x] Looked at the 20x `FRR` process rules (vuln disclosure, continuous
+      monitoring, change notification): triaged the 76 provider-facing
+      rules across VDR/VER/IEC/CCM/SCN into `frr-tracker.yaml` (browse with
+      `compliance-20x/tools/frr.py`). 3 `in_progress` (Dependabot-backed,
+      same evidence as KSI-SCR-MON/MIT); the other 73 are honestly
+      `not_started` because nearly all of them presume an active FedRAMP
+      Certification and real agency customers, which don't exist yet — see
+      `compliance-20x/README.md`'s "FRR (process rules)" section
+- [x] **Target Certification Class: C.** This resolves every
+      `varies_by_class` KSI indicator (KSI-CNA-EIS, KSI-MLA-ALA,
+      KSI-SVC-PRR/RUD/VCM are now confirmed *required*, not optional — they
+      were "only required at Class C" before a class was picked) and every
+      FRR rule that only exists as a per-class variant (13 such rules in
+      `frr-tracker.yaml`, e.g. VDR-TFR-MVX, IEC-CSO-IIR/OIR/FIR,
+      CCM-QTR-MTG — tracked using their Class C force/statement). None of
+      these flip to `implemented`/`in_progress` just from picking a class —
+      they still need real infrastructure, an incident process, or an
+      actual Certification/agency relationship to be true — but the
+      ambiguity of "which class applies" is gone.
 - [ ] Connect the Rego policies here with the target application's existing
       OPA deployment mentioned by the repo owner
 - [ ] Rev5 track (lower priority): author a Trestle component definition and

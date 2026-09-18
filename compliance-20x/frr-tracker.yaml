@@ -1,0 +1,831 @@
+# FedRAMP 20x FRR (FedRAMP Rules) tracker — the process-rule counterpart to
+# ksi-tracker.yaml. One entry per FRR rule from
+# compliance-20x/data/fedramp-consolidated-rules.json that has affects:
+# [Providers] (i.e. rules this project, as the CSO, would have to satisfy —
+# not the FedRAMP- or Agency-facing rules in the same categories).
+#
+# Scoped to the five categories CLAUDE.md called out as the FRR follow-up:
+# vulnerability disclosure (VDR, VER), incident communication (IEC),
+# continuous monitoring (CCM), and change notification (SCN). The other 12
+# FRR categories (AFC, AGU, CDS, CMU, CPO, FRC, IVV, MAS, MKT, REC, SCG, SDR)
+# are not covered here yet.
+#
+# status: not_started | in_progress | implemented
+# policy: path to a Rego file enforcing this rule, if any (none yet — these
+#   are process/reporting rules, not app-config settings like
+#   policy/fedramp_20x/app_config.rego checks)
+# evidence: short notes on what demonstrates this rule is met
+#
+# Target Certification Class: C (decided; see CLAUDE.md). Some rules exist
+# in the dataset only as class-specific variants (no top-level statement,
+# just varies_by_class: {a, b, c, d}) — for those, this tracker's "force"
+# and notes reflect the Class C variant specifically, since that's the
+# class this project applies. Browse the raw variants with
+# `frr.py show <ID>`.
+#
+# Overall finding: almost every rule in these five categories presumes an
+# actual FedRAMP Certification already exists — a real Certification Class,
+# real agency customers to notify, a real Certification Package to publish
+# Ongoing Certification Reports/Quarterly Reviews/Significant Change
+# Notifications into. A demo repo with no ATO and no agency customers has
+# no "necessary parties" to report to, so almost all of CCM and most of
+# VER/IEC/SCN are honestly not_started for that one structural reason. The
+# exception is VDR's detection/response rules, which don't require a
+# Certification to be true today: Dependabot is a real, running vulnerability
+# detection and response mechanism regardless of certification status, so
+# those three move to in_progress on the same evidence already used for
+# KSI-SCR-MON/KSI-SCR-MIT in ksi-tracker.yaml.
+#
+# Check coverage with: python compliance-20x/tools/frr.py tracker-status
+
+# --- VDR: Vulnerability Detection and Response ---
+
+VDR-CSO-ADT:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Automate Detection
+  status: in_progress
+  policy: null
+  evidence:
+  - Dependabot (.github/dependabot.yml) automatically scans uv + GitHub
+    Actions dependencies and opens PRs — confirmed live, 38 alerts surfaced
+    (21 high) after the first push.
+  notes: ''
+
+VDR-CSO-AKE:
+  category: Vulnerability Detection and Response
+  force: SHOULD NOT
+  name: Avoid KEVs
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No deployed machine-based information resources exist yet to check
+    against the CISA KEV catalog.
+
+VDR-CSO-DAC:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Detect After Changes
+  status: not_started
+  policy: null
+  evidence: []
+  notes: CI runs tests and policy checks on every push, but nothing scans for
+    vulnerabilities specifically triggered by a change (Dependabot runs on
+    its own schedule, not per-PR). Would need a dependency/SAST scan step
+    added to .github/workflows/ci.yml.
+
+VDR-CSO-DET:
+  category: Vulnerability Detection and Response
+  force: MUST
+  name: Vulnerability Detection
+  status: in_progress
+  policy: null
+  evidence:
+  - Dependabot dependency + Actions scanning is real, running vulnerability
+    detection — same evidence as KSI-SCR-MON.
+  notes: Only covers dependency vulnerabilities. No scanning, threat intel,
+    pentesting, or bug bounty coverage of anything else (there's no deployed
+    infra to scan).
+
+VDR-CSO-DFR:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Design For Resilience
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Architecture-level principle; nothing to evidence without a real
+    deployment target and design decisions made against it.
+
+VDR-CSO-FAV:
+  category: Vulnerability Detection and Response
+  force: MUST
+  name: Failures Are Vulnerabilities
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Requires an existing detection/response process mature enough to
+    have failures worth tracking as vulnerabilities. Nothing to evidence yet
+    beyond Dependabot, which hasn't failed.
+
+VDR-CSO-MSP:
+  category: Vulnerability Detection and Response
+  force: SHOULD NOT
+  name: Maintain Security
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No active scanning/assessment program exists yet that could weaken
+    security to facilitate itself.
+
+VDR-CSO-RES:
+  category: Vulnerability Detection and Response
+  force: MUST
+  name: Vulnerability Response
+  status: in_progress
+  policy: null
+  evidence:
+  - Dependabot automatically opens update PRs for detected vulnerabilities,
+    which are tracked, evaluated, and merged through the normal PR process —
+    same evidence as KSI-SCR-MIT.
+  notes: Response is currently ad hoc (whoever reviews the Dependabot PR),
+    not a documented, systematic process. No mitigation/remediation SLA,
+    exploitation monitoring, or reporting yet.
+
+VDR-CSO-SIR:
+  category: Vulnerability Detection and Response
+  force: MAY
+  name: Sampling
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No fleet of similar machine-based resources exists to sample.
+
+VDR-TFR-MVX:
+  category: Vulnerability Detection and Response
+  force: MUST
+  name: Persistent Machine Verification and Validation for 20x
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant (this project's target class, see CLAUDE.md): MUST
+    verify and validate the status of machine-based information resources
+    at least every 3 days. No deployed machine-based infrastructure exists
+    yet to verify/validate on any cadence.
+
+VDR-TFR-PCD:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Persistently Complete Detection
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: SHOULD persistently detect vulnerabilities on all
+    resources NOT likely to drift, at least monthly. No deployed
+    infrastructure exists yet to run this detection against.
+
+VDR-TFR-PDD:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Persistent Drift Detection
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: SHOULD persistently detect vulnerabilities on
+    resources likely to drift, at least every 14 days. Dependabot's own
+    schedule doesn't map to this cadence, and there's no deployed
+    infrastructure with a notion of "likely to drift" yet.
+
+VDR-TFR-PSD:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Persistent Sample Detection
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: SHOULD sample-detect on similar machine-based
+    resources at least every 3 days. No fleet of similar machine-based
+    resources exists yet to sample.
+
+VDR-TFR-PVR:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Mitigation and Remediation Expectations
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Requires a PAIN-rating methodology (VER-EVA-EPA) and defined
+    mitigation/remediation timeframes; neither exists yet.
+
+VDR-TFR-KEV:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Remediate KEVs
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No deployed infra exposed to KEV risk, and no process yet for
+    checking Dependabot alerts against the CISA KEV catalog specifically.
+
+VDR-TFR-NMV:
+  category: Vulnerability Detection and Response
+  force: MUST
+  name: Non-Machine Verification and Validation
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No non-machine-based information resources (or a defined inventory
+    of them) exist yet to verify/validate on a recurring cadence.
+
+VDR-TFR-RMN:
+  category: Vulnerability Detection and Response
+  force: SHOULD
+  name: Remaining Vulnerabilities
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No "routine operations" exist yet (nothing is deployed/operated) in
+    which to mitigate remaining vulnerabilities.
+
+# --- VER: Vulnerability Evaluation and Reporting ---
+
+VER-EVA-AIA:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Assume It's Automatable
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No vulnerability evaluation methodology exists yet to apply this
+    assumption within. The 38 Dependabot alerts are raw input, not yet run
+    through any evaluation step.
+
+VER-EVA-EFA:
+  category: Vulnerability Evaluation and Reporting
+  force: SHOULD
+  name: Evaluation Factors
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as VER-EVA-AIA — no evaluation process exists yet.
+
+VER-EVA-EFP:
+  category: Vulnerability Evaluation and Reporting
+  force: SHOULD
+  name: Evaluate False Positives
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as VER-EVA-AIA.
+
+VER-EVA-EIR:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Evaluate Internet-Reachability
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Requires an evaluation process plus a real deployment topology to
+    evaluate reachability against; neither exists yet.
+
+VER-EVA-ELX:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Evaluate Exploitability
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as VER-EVA-AIA.
+
+VER-EVA-EPA:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Estimate Potential Agency Impact
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Requires a PAIN-rating methodology and agency context (this app has
+    no real agency customers); nothing to evidence yet.
+
+VER-EVA-GRV:
+  category: Vulnerability Evaluation and Reporting
+  force: SHOULD
+  name: Group Vulnerabilities
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as VER-EVA-AIA.
+
+VER-RPT-AVI:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Accepted Vulnerability Info
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No accepted-vulnerability process or reports exist yet.
+
+VER-RPT-HLO:
+  category: Vulnerability Evaluation and Reporting
+  force: SHOULD
+  name: High-Level Overviews
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No vulnerability activity report exists yet to include an overview
+    in — there are no agency "necessary parties" to report to without a real
+    Certification.
+
+VER-RPT-NID:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST NOT
+  name: Responsible Disclosure
+  status: not_started
+  policy: null
+  evidence: []
+  notes: SECURITY.md states an intent to handle disclosure responsibly, but
+    there's no actual vulnerability report yet to disclose responsibly (or
+    not) within. Revisit once VER-RPT-PER produces real reports.
+
+VER-RPT-PER:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Persistent Reporting
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No agency customers or FedRAMP Certification exist yet, so there
+    are no "necessary parties" to report vulnerability activity to.
+
+VER-RPT-RPD:
+  category: Vulnerability Evaluation and Reporting
+  force: MAY
+  name: Responsible Public Disclosure
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Optional; nothing to disclose yet since no evaluation has happened.
+
+VER-RPT-VDT:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Vulnerability Details
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as VER-RPT-PER.
+
+VER-TFR-EVU:
+  category: Vulnerability Evaluation and Reporting
+  force: SHOULD
+  name: Evaluate Vulnerabilities Quickly
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: SHOULD evaluate all vulnerabilities within 5 days of
+    detection. No evaluation process exists yet (same gap as VER-EVA-AIA).
+
+VER-TFR-IRI:
+  category: Vulnerability Evaluation and Reporting
+  force: SHOULD
+  name: Internet-Reachable Incidents
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: SHOULD treat certain high-impact internet-reachable
+    vulnerabilities as FedRAMP Reportable Incidents. Requires the
+    exploitability/reachability/PAIN evaluation this tracker's VER-EVA
+    entries don't have yet, plus an incident process (see IEC entries).
+
+VER-TFR-MAV:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Mark Accepted Vulnerabilities
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Requires an evaluation process running long enough (192 days) to
+    have unmitigated vulnerabilities to categorize; nothing has run that
+    long yet.
+
+VER-TFR-MHR:
+  category: Vulnerability Evaluation and Reporting
+  force: MUST
+  name: Monthly Activity Report
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as VER-RPT-PER — no necessary parties to report to
+    monthly.
+
+VER-TFR-MRH:
+  category: Vulnerability Evaluation and Reporting
+  force: SHOULD
+  name: Historical Activity
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: SHOULD make historical vulnerability activity
+    available in JSON format, updated at least every 14 days. No API or
+    machine-readable report exists yet.
+
+VER-TFR-NRI:
+  category: Vulnerability Evaluation and Reporting
+  force: MAY
+  name: Non-Internet-Reachable Incidents
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant is MAY (optional even at this class). Same gap as
+    VER-TFR-IRI if pursued.
+
+# --- IEC: Incident Evaluation and Communication ---
+
+IEC-CSO-AIR:
+  category: Incident Evaluation and Communication
+  force: SHOULD
+  name: Automated Incident Reporting
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No incident response process exists yet to automate reporting for.
+
+IEC-CSO-DPR:
+  category: Incident Evaluation and Communication
+  force: MUST
+  name: Default PAIN Rating
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Requires an incident evaluation process; none exists (there is no
+    incident response plan or on-call process in this repo).
+
+IEC-CSO-EFI:
+  category: Incident Evaluation and Communication
+  force: SHOULD
+  name: Estimate Federal Impact
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as IEC-CSO-DPR.
+
+IEC-CSO-EFR:
+  category: Incident Evaluation and Communication
+  force: MUST
+  name: Evaluate FedRAMP Reportability
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No incident response process or incident history exists yet — this
+    is organizational, not technical, and needs a real team and process
+    (same category of gap as the KSI CED/INR entries).
+
+IEC-CSO-FIR:
+  category: Incident Evaluation and Communication
+  force: MUST
+  name: Final Incident Report
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: MUST notify all affected parties with a Final
+    Incident Report once an incident is resolved. Same organizational gap
+    as IEC-CSO-EFR — no incident response process exists yet.
+
+IEC-CSO-IIR:
+  category: Incident Evaluation and Communication
+  force: MUST
+  name: Initial Incident Report
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: MUST notify all affected parties with an Initial
+    Incident Report after identifying a FedRAMP Reportable Incident. Same
+    organizational gap as IEC-CSO-EFR.
+
+IEC-CSO-OIR:
+  category: Incident Evaluation and Communication
+  force: MUST
+  name: Ongoing Incident Reports
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant: MUST notify all affected parties of ongoing incident
+    activity as new information becomes available. Same organizational gap
+    as IEC-CSO-EFR.
+
+# --- CCM: Collaborative Continuous Monitoring ---
+#
+# Every rule below presumes an active FedRAMP Certification and real agency
+# customers to report to (Ongoing Certification Reports every 3 months,
+# Quarterly Reviews, feedback mechanisms). None of that exists for a demo
+# repo with no ATO — these are honestly not_started as a block, not
+# individually re-justified below.
+
+CCM-OCR-AFS:
+  category: Collaborative Continuous Monitoring
+  force: MUST
+  name: Anonymized Feedback Summary
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Ongoing Certification Report exists (no Certification, no
+    agency feedback to summarize).
+
+CCM-OCR-AVL:
+  category: Collaborative Continuous Monitoring
+  force: MUST
+  name: Report Availability
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No FedRAMP Certification exists yet, so there is no Ongoing
+    Certification Report to supply.
+
+CCM-OCR-FBM:
+  category: Collaborative Continuous Monitoring
+  force: MUST
+  name: Feedback Mechanism
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Ongoing Certification Report exists to attach a feedback
+    mechanism to.
+
+CCM-OCR-LSI:
+  category: Collaborative Continuous Monitoring
+  force: MUST NOT
+  name: Limit Sensitive Information
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Ongoing Certification Report exists yet.
+
+CCM-OCR-NRD:
+  category: Collaborative Continuous Monitoring
+  force: MUST
+  name: Next Report Date
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Ongoing Certification Report cycle exists yet.
+
+CCM-OCR-RPS:
+  category: Collaborative Continuous Monitoring
+  force: MAY
+  name: Responsible Public Certification Report Sharing
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Optional; no report exists to share.
+
+CCM-OCR-SOR:
+  category: Collaborative Continuous Monitoring
+  force: SHOULD
+  name: Spread Out Reports
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No report cycle exists yet.
+
+CCM-QTR-ACT:
+  category: Collaborative Continuous Monitoring
+  force: SHOULD
+  name: Additional Content
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Quarterly Reviews exist yet (no Certification, no agencies).
+
+CCM-QTR-MTG:
+  category: Collaborative Continuous Monitoring
+  force: MUST
+  name: Quarterly Review Meeting
+  status: not_started
+  policy: null
+  evidence: []
+  notes: >-
+    Class C variant (this project's target class): MUST host a synchronous
+    Quarterly Review every 3 months. No FedRAMP Certification or agency
+    customers exist yet to hold one for.
+
+CCM-QTR-NID:
+  category: Collaborative Continuous Monitoring
+  force: MUST NOT
+  name: No Irresponsible Disclosure
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Quarterly Reviews exist yet.
+
+CCM-QTR-NRD:
+  category: Collaborative Continuous Monitoring
+  force: MUST
+  name: Next Review Date
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Quarterly Review cycle exists yet.
+
+CCM-QTR-REG:
+  category: Collaborative Continuous Monitoring
+  force: MUST
+  name: Meeting Registration Info
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Quarterly Reviews exist yet.
+
+CCM-QTR-RTP:
+  category: Collaborative Continuous Monitoring
+  force: SHOULD NOT
+  name: Restrict Third Parties
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Quarterly Reviews exist yet.
+
+CCM-QTR-RTR:
+  category: Collaborative Continuous Monitoring
+  force: SHOULD
+  name: Record/Transcribe Reviews
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Quarterly Reviews exist yet.
+
+CCM-QTR-SAR:
+  category: Collaborative Continuous Monitoring
+  force: SHOULD
+  name: Schedule Around Reports
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No Quarterly Reviews or Ongoing Certification Reports exist yet.
+
+CCM-QTR-SCR:
+  category: Collaborative Continuous Monitoring
+  force: MAY
+  name: Share Content Responsibly
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Optional; no Quarterly Review content exists to share.
+
+CCM-QTR-SRR:
+  category: Collaborative Continuous Monitoring
+  force: MAY
+  name: Share Recordings Responsibly
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Optional; no Quarterly Reviews exist yet to record.
+
+# --- SCN: Significant Change Notification ---
+
+SCN-ADP-NTF:
+  category: Significant Change Notification
+  force: MUST
+  name: Notification Requirements
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No agency customers exist yet to notify of adaptive changes, and
+    change-management.md doesn't yet classify changes by significance type.
+
+SCN-CSO-ARI:
+  category: Significant Change Notification
+  force: MAY
+  name: Additional Relevant Information
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Optional; depends on SCN-CSO-INF existing first.
+
+SCN-CSO-EMG:
+  category: Significant Change Notification
+  force: MAY
+  name: Emergency Changes
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No significant-change notification program exists yet to grant an
+    emergency exception from.
+
+SCN-CSO-EVA:
+  category: Significant Change Notification
+  force: MUST
+  name: Evaluate Changes
+  status: not_started
+  policy: null
+  evidence: []
+  notes: docs/change-management.md documents how changes are made (PR +
+    CI required) but doesn't yet classify changes as routine, adaptive, or
+    transformative — that classification step is the actual gap. Natural
+    next edit to that doc once this is prioritized.
+
+SCN-CSO-HIS:
+  category: Significant Change Notification
+  force: MUST
+  name: Historical Notifications
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No notifications exist yet to keep history of (depends on
+    SCN-CSO-EVA existing first).
+
+SCN-CSO-HRM:
+  category: Significant Change Notification
+  force: MUST
+  name: Human and Machine-Readable Notifications
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Depends on SCN-CSO-EVA and SCN-CSO-INF existing first.
+
+SCN-CSO-INF:
+  category: Significant Change Notification
+  force: MUST
+  name: Required Information
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No notification template or process exists yet, and no agency
+    customers to send it to.
+
+SCN-CSO-MAR:
+  category: Significant Change Notification
+  force: MUST
+  name: Maintain Audit Records
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Git/PR history (already used as evidence for KSI-CMT-LMC) could
+    serve as this audit trail once SCN-CSO-EVA's classification step exists
+    — right now there's no change-evaluation activity to have a record of.
+
+SCN-CSO-NOM:
+  category: Significant Change Notification
+  force: MAY
+  name: Notification Mechanisms
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Optional; depends on a notification program existing first.
+
+SCN-RTR-NNR:
+  category: Significant Change Notification
+  force: SHOULD NOT
+  name: No Notification Requirements
+  status: not_started
+  policy: null
+  evidence: []
+  notes: This is an exemption from a notification program that doesn't exist
+    yet, so there's nothing real to exempt routine changes from.
+
+SCN-TRF-NAF:
+  category: Significant Change Notification
+  force: MUST
+  name: Notification After Finishing
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No transformative-change notification program or agency customers
+    exist yet.
+
+SCN-TRF-NAV:
+  category: Significant Change Notification
+  force: MUST
+  name: Notification After Verification
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as SCN-TRF-NAF.
+
+SCN-TRF-NFP:
+  category: Significant Change Notification
+  force: MUST
+  name: Notification of Final Plans
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as SCN-TRF-NAF.
+
+SCN-TRF-NIP:
+  category: Significant Change Notification
+  force: MUST
+  name: Notification of Initial Plans
+  status: not_started
+  policy: null
+  evidence: []
+  notes: Same gap as SCN-TRF-NAF.
+
+SCN-TRF-TPR:
+  category: Significant Change Notification
+  force: SHOULD
+  name: Third-Party Review
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No transformative changes or third-party assessor relationship
+    exist yet.
+
+SCN-TRF-UPD:
+  category: Significant Change Notification
+  force: MUST
+  name: Update Documentation
+  status: not_started
+  policy: null
+  evidence: []
+  notes: No transformative changes have happened yet to update documentation
+    for.
