@@ -6,8 +6,9 @@ venv/
 *.egg-info/
 .pytest_cache/
 
-# Trestle workspace build output
+# Trestle workspace build output / regenerable derived artifacts
 compliance/dist/
+compliance/catalogs/fedramp-moderate-resolved/
 
 # Editor / OS
 .DS_Store

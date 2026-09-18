@@ -22,10 +22,11 @@ NIST 800-53 control IDs so findings are cross-referenceable:
 
 2. **Audit & reporting — OSCAL / Trestle** (`compliance/`)
    `compliance-trestle` workspace producing OSCAL documents (System
-   Security Plan, Component Definitions, Assessment Results) against the
-   imported FedRAMP Moderate profile. This is the artifact layer an
-   assessor would actually review. Not yet initialized — see
-   `compliance/README.md` for the `trestle init` steps.
+   Security Plan, Component Definitions, Assessment Results). Initialized
+   and importing the **NIST SP 800-53 Rev 5 Moderate baseline** as a
+   stand-in for a FedRAMP-tailored profile — FedRAMP's own machine-readable
+   Moderate baseline no longer has a public home at the location it used to
+   (see `compliance/README.md` for details and how to revisit this).
 
 When adding a control mapping, add it in both places where applicable: a
 Rego rule enforcing it in `policy/`, and a corresponding
@@ -49,9 +50,14 @@ requirements-dev.txt    Dev/test deps + compliance-trestle
 
 ## Stack
 
-- **App:** Python 3 + Flask
+- **App:** Python + Flask
 - **Enforcement:** OPA + Rego
 - **Audit/reporting:** OSCAL via compliance-trestle
+
+> `compliance-trestle` requires **Python 3.10+** (a dependency uses
+> `typing.TypeGuard`). This project's venv uses Homebrew's `python@3.12`,
+> not the macOS system Python 3.9. Create it with:
+> `/opt/homebrew/bin/python3.12 -m venv .venv`
 
 ## Running the app
 
@@ -84,11 +90,17 @@ opa test policy/ -v
 
 - [x] Placeholder Flask app
 - [x] Example Rego policy + tests (`policy/fedramp/app_config.rego`)
-- [ ] Initialize the Trestle workspace under `compliance/` and import the
-      FedRAMP Moderate profile
-- [ ] Build out a full control-to-policy mapping (start with the FedRAMP
-      Moderate control families most relevant to a web app: AC, AU, IA, SC, SI)
-- [ ] Wire `opa test` and (once it exists) `trestle validate`/`trestle author`
-      checks into CI
+- [x] Initialize the Trestle workspace under `compliance/`, import the NIST
+      Rev 5 catalog + Moderate baseline profile, confirm it resolves
+      (177 controls across 18 families)
+- [ ] Author a Trestle component definition mapping the placeholder app +
+      Rego policies to specific controls
+- [ ] Generate an SSP from the profile + component definition
+- [ ] Build out a full control-to-policy mapping (start with the control
+      families most relevant to a web app: AC, AU, IA, SC, SI)
+- [ ] Wire `opa test` and `trestle validate`/`trestle author` checks into CI
 - [ ] Connect the Rego policies here with the target application's existing
       OPA deployment mentioned by the repo owner
+- [ ] Decide whether to keep pursuing a FedRAMP-tailored OSCAL baseline or
+      treat FedRAMP 20x's `consolidated-rules.json` format as the real target
+      (see `compliance/README.md`)
