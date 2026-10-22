@@ -94,8 +94,9 @@ KSI-CNA-OFA:
   status: not_started
   policy: null
   evidence: []
-  notes: "No NIST controls mapped for this one in the dataset. Needs a real HA/DR architecture (multi-AZ,\
-    \ autoscaling, health checks) \u2014 not applicable to a single placeholder Flask process."
+  notes: "Needs a real HA/DR architecture (multi-AZ, autoscaling, health checks)\
+    \ \u2014 not applicable to a single placeholder Flask process. (The 2026.10.13.01\
+    \ dataset added cp-2.5, sc-12.1 here; it was unmapped before.)"
 KSI-CNA-RNT:
   theme: Cloud Native Architecture
   name: Restricting Network Traffic

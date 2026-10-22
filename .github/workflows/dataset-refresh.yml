@@ -1,0 +1,70 @@
+name: FedRAMP dataset refresh
+
+# Keeps the vendored FedRAMP 20x Consolidated Rules dataset
+# (compliance-20x/data/) from silently falling behind upstream. On a schedule
+# (and on demand) it pulls the latest copy, validates it against the schema,
+# and — only if it changed and is still valid — opens a PR with a generated
+# diff summary. Vendoring stays the source of truth; updates arrive as a
+# reviewable change, never as unreviewed drift under a green build.
+
+on:
+  schedule:
+    - cron: "0 12 * * 1" # Mondays 12:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Fetch latest dataset + schema from FedRAMP/rules
+        run: |
+          curl -fsSL -o compliance-20x/data/fedramp-consolidated-rules.json \
+            https://raw.githubusercontent.com/FedRAMP/rules/main/fedramp-consolidated-rules.json
+          curl -fsSL -o compliance-20x/data/fedramp-consolidated-rules.schema.json \
+            https://raw.githubusercontent.com/FedRAMP/rules/main/schemas/fedramp-consolidated-rules.schema.json
+
+      - name: Validate against schema
+        # Fail here rather than open a PR for a schema-invalid dataset.
+        run: uv run python compliance-20x/tools/validate_dataset.py
+
+      - name: Summarize changes
+        id: diff
+        run: |
+          if uv run python compliance-20x/tools/diff_dataset.py > "${RUNNER_TEMP}/summary.md"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          cat "${RUNNER_TEMP}/summary.md"
+
+      - name: Open pull request
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/fedramp-dataset-refresh
+          delete-branch: true
+          commit-message: "Refresh FedRAMP 20x consolidated rules dataset"
+          title: "Refresh FedRAMP 20x dataset"
+          body-path: ${{ runner.temp }}/summary.md
+          add-paths: |
+            compliance-20x/data/fedramp-consolidated-rules.json
+            compliance-20x/data/fedramp-consolidated-rules.schema.json
+
+# Note: PRs opened by the default GITHUB_TOKEN do not themselves trigger other
+# workflows (CI won't auto-run on this PR). Review the diff and re-run CI
+# manually, or swap in a PAT / GitHub App token if you want CI to fire
+# automatically on the refresh PR. See the create-pull-request docs.

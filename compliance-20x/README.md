@@ -59,11 +59,14 @@ indicators vs. the 177 controls in the Moderate baseline imported under
 ## Files
 
 - `data/fedramp-consolidated-rules.json` — vendored dataset (version
-  `2026.09.13.02`, from [FedRAMP/rules](https://github.com/FedRAMP/rules))
+  `2026.10.13.01`, from [FedRAMP/rules](https://github.com/FedRAMP/rules))
 - `data/fedramp-consolidated-rules.schema.json` — its JSON Schema
 - `tools/validate_dataset.py` — validates the dataset against the schema
   (FedRAMP's own guidance for agents consuming this data says to do this
   before relying on it — see the upstream repo's `AGENTS.md`)
+- `tools/diff_dataset.py` — summarizes how the on-disk dataset differs from the
+  committed copy (version bump, added/removed KSI/FRR IDs, control-mapping and
+  statement/force changes); drives the refresh PR body described below
 - `tools/ksi.py` — browse the dataset and check tracker coverage:
   ```sh
   uv run python compliance-20x/tools/ksi.py themes
@@ -100,7 +103,25 @@ curl -sL -o compliance-20x/data/fedramp-consolidated-rules.schema.json \
   https://raw.githubusercontent.com/FedRAMP/rules/main/schemas/fedramp-consolidated-rules.schema.json
 uv run python compliance-20x/tools/validate_dataset.py
 uv run python compliance-20x/tools/ksi.py tracker-status   # check for new/removed indicator IDs
+uv run python compliance-20x/tools/diff_dataset.py         # summarize what changed vs. the committed copy
 ```
+
+A scheduled workflow (`.github/workflows/dataset-refresh.yml`) now runs this
+automatically and opens a PR whenever upstream differs, so the vendored copy
+shouldn't silently fall behind. Refreshing by hand is still fine when you want
+it sooner.
+
+### Refresh history
+
+- **`2026.09.13.02` → `2026.10.13.01`** (pulled 2026-10-22): no KSI indicators
+  or FRR rules added/removed (still 46 / 221). The release was a broad refresh
+  of NIST 800-53 **control mappings** — ~40 of 46 KSI indicators changed their
+  `controls` list (almost all expansions; e.g. `KSI-CNA-OFA` went from unmapped
+  to `cp-2.5, sc-12.1`, `KSI-SCR-MIT` roughly tripled). No KSI statements/force
+  changed. Three FRR rules changed statement/force: `FRC-CSF-RDY`,
+  `FRC-CSO-JSN`, `VER-EVA-EPA`. Tracker entries key off indicator/rule IDs
+  rather than duplicating control lists, so no entry's logic broke; only
+  `KSI-CNA-OFA`'s note (which claimed it was unmapped) needed updating.
 
 ## Theme-by-theme status
 

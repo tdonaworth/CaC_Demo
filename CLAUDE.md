@@ -81,6 +81,7 @@ docs/
 SECURITY.md             Draft vulnerability disclosure policy (KSI-PIY-RVD prerequisite)
 .github/
   workflows/ci.yml      Runs pytest, opa test, dataset validation on every push/PR
+  workflows/dataset-refresh.yml  Scheduled: PRs a FedRAMP 20x dataset update when upstream changes
   dependabot.yml        Automated dependency updates (KSI-SCR-MIT/MON)
 pyproject.toml          Project + runtime deps (Flask) + dev dep group (pytest, compliance-trestle, pyyaml, jsonschema)
 uv.lock                 Locked, resolved dependency tree (committed — like package-lock.json)
