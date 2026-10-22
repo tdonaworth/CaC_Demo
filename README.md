@@ -1,4 +1,4 @@
-# CoC Demo
+# CaC Demo
 
 ![CI](https://github.com/tdonaworth/CaC_Demo/actions/workflows/ci.yml/badge.svg)
 
