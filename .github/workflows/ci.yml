@@ -10,7 +10,7 @@ jobs:
     env:
       OPA_VERSION: "1.20.2"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install uv
         run: |
