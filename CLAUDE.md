@@ -64,12 +64,17 @@ update for 20x).
 ## Repo layout
 
 ```
-app/                    Placeholder Flask web app
-  app.py                Entry point (routes: / and /healthz), request audit logging
-  templates/            Jinja templates
-  static/               CSS
+app/                    Flask notes API (containerized; see Dockerfile)
+  app.py                App factory: /, /healthz, /readyz, bearer-auth /api/notes CRUD,
+                        security headers, structured JSON audit log
+  config.py, db.py      Env-based config; SQLAlchemy (SQLite local, Postgres/RDS in AWS)
+  templates/, static/   Jinja templates, CSS
 tests/
-  test_app.py           Basic Flask tests, incl. audit-log test
+  test_app.py           Flask tests: auth, CRUD/isolation, headers, audit log
+Dockerfile              Multi-stage, non-root (uid 10001), gunicorn
+docker-compose.yml      Local app + Postgres
+terraform/              MOCK AWS deployment: VPC, ALB+WAF, ECS Fargate, RDS, KMS, ECR,
+                        Secrets Manager (never applied; see terraform/README.md)
 policy/                 OPA/Rego enforcement policies (see policy/README.md)
   fedramp_rev5/         Rev5/NIST 800-53 control-tagged rules (legacy)
   fedramp_20x/          FedRAMP 20x KSI-tagged rules (current target)
@@ -184,6 +189,11 @@ uv run python compliance-20x/tools/frr.py tracker-status
       they still need real infrastructure, an incident process, or an
       actual Certification/agency relationship to be true — but the
       ambiguity of "which class applies" is gone.
+- [x] App expanded + containerized; mock Terraform (ECS/RDS/ALB) and
+      `policy/fedramp_20x/terraform_ecs.rego` (checks `terraform show -json`
+      plan output) added. **Written without local opa/terraform/docker — the
+      first CI run is the verification.** KSI tracker not yet updated for
+      the new evidence.
 - [ ] Connect the Rego policies here with the target application's existing
       OPA deployment mentioned by the repo owner
 - [ ] Rev5 track (lower priority): author a Trestle component definition and

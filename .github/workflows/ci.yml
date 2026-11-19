@@ -34,3 +34,30 @@ jobs:
 
       - name: Run policy tests
         run: opa test policy/ -v
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t cac-demo:ci .
+      - name: Smoke test (non-root, serves /healthz)
+        run: |
+          test "$(docker run --rm --entrypoint id cac-demo:ci -u)" = "10001"
+          docker run -d --name app -p 8000:8000 -e API_KEYS=ci cac-demo:ci
+          for i in $(seq 10); do curl -fs localhost:8000/healthz && exit 0; sleep 1; done
+          docker logs app; exit 1
+
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - name: Format check
+        run: terraform -chdir=terraform fmt -check -recursive
+      - name: Validate
+        run: |
+          terraform -chdir=terraform init -backend=false
+          terraform -chdir=terraform validate

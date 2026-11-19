@@ -1,0 +1,11 @@
+.git
+.venv
+.github
+terraform
+policy
+compliance
+compliance-20x
+docs
+tests
+**/__pycache__
+*.db
